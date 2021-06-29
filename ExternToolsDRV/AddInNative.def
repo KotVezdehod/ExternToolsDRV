@@ -1,0 +1,6 @@
+LIBRARY    "ExtrnToolsDRV"
+
+EXPORTS
+GetClassObject
+DestroyObject
+GetClassNames
