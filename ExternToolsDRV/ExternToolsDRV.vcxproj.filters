@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Valijson">
+      <UniqueIdentifier>{791290d4-93ef-483f-9189-35eb96fa685e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -36,6 +39,96 @@
     <ClInclude Include="..\include\types.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="..\valijson\adapters\jsoncpp_adapter.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\adapters\std_string_adapter.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\constraints\basic_constraint.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\constraints\concrete_constraints.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\constraints\constraint.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\constraints\constraint_visitor.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\constraint_builder.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\exceptions.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\adapter.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\basic_adapter.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\custom_allocator.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\debug.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\frozen_value.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\json_pointer.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\json_reference.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\optional.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\optional_bundled.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\internal\uri.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\schema.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\schema_parser.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\subschema.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\utils\file_utils.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\utils\jsoncpp_utils.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\utils\utf8_utils.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\validation_results.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\validation_visitor.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\valijson\validator.hpp">
+      <Filter>Valijson</Filter>
+    </ClInclude>
+    <ClInclude Include="valiJson.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Json.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="StringConverters.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -45,6 +138,12 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="AddInNative.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Json.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="StringConverters.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

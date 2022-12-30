@@ -1,15 +1,45 @@
-﻿#ifndef __ADDINNATIVE_H__
+﻿#pragma once
+#ifndef __ADDINNATIVE_H__
 #define __ADDINNATIVE_H__
 
 #include "..\include\ComponentBase.h"
 #include "..\include\AddInDefBase.h"
 #include "..\include\IMemoryManager.h"
-#include <locale>
-#include <stdio.h>
-#include <wchar.h>
-#include <string>
+
 
 //#include "stdafx.h"
+
+static const wchar_t* g_PropNames[] = {
+    L"IsEnabled",
+    L"IsTimerPresent"
+};
+static const wchar_t* g_MethodNames[] = {
+    L"Enable",
+    L"Disable",
+    L"ShowInStatusLine",
+    L"StartTimer",
+    L"StopTimer",
+    L"LoadPicture",
+    L"ShowMessageBox",
+    L"Loopback"
+    L"Pause"
+};
+
+static const wchar_t* g_PropNamesRu[] = {
+    L"Включен",
+    L"ЕстьТаймер"
+};
+static const wchar_t* g_MethodNamesRu[] = {
+    L"Включить",
+    L"Выключить",
+    L"ПоказатьВСтрокеСтатуса",
+    L"СтартТаймер",
+    L"СтопТаймер",
+    L"ЗагрузитьКартинку",
+    L"ПоказатьСообщение",
+    L"Петля",
+    L"Пауза"
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -35,6 +65,7 @@ public:
         eMethShowMsgBox,
 		eLoopback,
         eMethDelay,
+        eMethJvdValidate,
         eMethLast      // Always last
     };
 
@@ -99,6 +130,7 @@ public:
 #endif
     operator const wchar_t*(){ return m_str_wchar; }
     operator wchar_t*(){ return m_str_wchar; }
+        
 private:
     WcharWrapper& operator = (const WcharWrapper& other) { return *this; }
     WcharWrapper(const WcharWrapper& other) { }

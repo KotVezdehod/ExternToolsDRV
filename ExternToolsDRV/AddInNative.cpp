@@ -1,8 +1,12 @@
-﻿
-#include "pch.h"
-#include "AddInNative.h"
-#include <chrono>
+﻿#include <chrono>
+#include <codecvt>
 #include <thread>
+#include <string>
+#include <locale>
+//#include <stdio.h>
+//#include <wchar.h>
+//#include "pch.h"
+#include "AddInNative.h"
 
 #define TIME_LEN 65
 
@@ -12,37 +16,7 @@
 #pragma setlocale("ru-RU" )
 #endif
 
-static const wchar_t *g_PropNames[] = {
-    L"IsEnabled", 
-    L"IsTimerPresent"
-};
-static const wchar_t *g_MethodNames[] = {
-    L"Enable", 
-    L"Disable", 
-    L"ShowInStatusLine",
-    L"StartTimer", 
-    L"StopTimer", 
-    L"LoadPicture", 
-    L"ShowMessageBox", 
-    L"Loopback"
-    L"Pause"
-};
-
-static const wchar_t *g_PropNamesRu[] = {
-    L"Включен", 
-    L"ЕстьТаймер"
-};
-static const wchar_t *g_MethodNamesRu[] = {
-    L"Включить", 
-    L"Выключить", 
-    L"ПоказатьВСтрокеСтатуса", 
-    L"СтартТаймер", 
-    L"СтопТаймер", 
-    L"ЗагрузитьКартинку", 
-    L"ПоказатьСообщение", 
-    L"Петля",
-    L"Пауза"
-};
+using std::this_thread::sleep_for;
 
 static const wchar_t g_kClassNames[] = L"CAddInNative"; //"|OtherClass1|OtherClass2";
 static IAddInDefBase *pAsyncEvent = NULL;
@@ -50,6 +24,7 @@ static IAddInDefBase *pAsyncEvent = NULL;
 uint32_t convToShortWchar(WCHAR_T** Dest, const wchar_t* Source, size_t len = 0);
 uint32_t convFromShortWchar(wchar_t** Dest, const WCHAR_T* Source, uint32_t len = 0);
 uint32_t getLenShortWcharStr(const WCHAR_T* Source);
+
 static AppCapabilities g_capabilities = eAppCapabilitiesInvalid;
 static WcharWrapper s_names(g_kClassNames);
 //---------------------------------------------------------------------------//
@@ -333,6 +308,8 @@ long CAddInNative::GetNParams(const long lMethodNum)
         return 1;
     case eMethDelay:
         return 1;
+    case eMethJvdValidate:
+        return 2;
     default:
         return 0;
     }
@@ -368,6 +345,7 @@ bool CAddInNative::HasRetVal(const long lMethodNum)
     { 
     case eMethLoadPicture:
     case eLoopback:
+    case eMethJvdValidate:
         return true;
     default:
         return false;
@@ -470,8 +448,8 @@ bool CAddInNative::CallAsProc(const long lMethodNum,
     {
         if (!lSizeArray || !paParams)
             return false;
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(paParams->uintVal));
+        
+        sleep_for(std::chrono::milliseconds(paParams->uintVal));
 
     }
     return true;
@@ -602,8 +580,19 @@ bool CAddInNative::CallAsFunc(const long lMethodNum,
             delete[] mbstr;
 
         break;
+
+    /*case eMethJvdValidate:
+    {
+        ValiJson jvd(m_iMemory);
+        jvd.validateJsonByScheme(paParams, pvarRetValue);
     }
+    return true;*/
+
+    }
+
     return ret; 
+
+
 }
 //---------------------------------------------------------------------------//
 // This code will work only on the client!
@@ -840,3 +829,4 @@ WcharWrapper::~WcharWrapper()
     }
 }
 //---------------------------------------------------------------------------//
+

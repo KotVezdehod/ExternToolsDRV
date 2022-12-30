@@ -105,10 +105,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;EXTERNTOOLSDRV_EXPORTS;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <EnableModules>true</EnableModules>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,8 +144,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;EXTERNTOOLSDRV_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <EnableModules>true</EnableModules>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -158,19 +165,51 @@
     <ClInclude Include="..\include\ComponentBase.h" />
     <ClInclude Include="..\include\IMemoryManager.h" />
     <ClInclude Include="..\include\types.h" />
+    <ClInclude Include="..\valijson\adapters\jsoncpp_adapter.hpp" />
+    <ClInclude Include="..\valijson\adapters\std_string_adapter.hpp" />
+    <ClInclude Include="..\valijson\constraints\basic_constraint.hpp" />
+    <ClInclude Include="..\valijson\constraints\concrete_constraints.hpp" />
+    <ClInclude Include="..\valijson\constraints\constraint.hpp" />
+    <ClInclude Include="..\valijson\constraints\constraint_visitor.hpp" />
+    <ClInclude Include="..\valijson\constraint_builder.hpp" />
+    <ClInclude Include="..\valijson\exceptions.hpp" />
+    <ClInclude Include="..\valijson\internal\adapter.hpp" />
+    <ClInclude Include="..\valijson\internal\basic_adapter.hpp" />
+    <ClInclude Include="..\valijson\internal\custom_allocator.hpp" />
+    <ClInclude Include="..\valijson\internal\debug.hpp" />
+    <ClInclude Include="..\valijson\internal\frozen_value.hpp" />
+    <ClInclude Include="..\valijson\internal\json_pointer.hpp" />
+    <ClInclude Include="..\valijson\internal\json_reference.hpp" />
+    <ClInclude Include="..\valijson\internal\optional.hpp" />
+    <ClInclude Include="..\valijson\internal\optional_bundled.hpp" />
+    <ClInclude Include="..\valijson\internal\uri.hpp" />
+    <ClInclude Include="..\valijson\schema.hpp" />
+    <ClInclude Include="..\valijson\schema_parser.hpp" />
+    <ClInclude Include="..\valijson\subschema.hpp" />
+    <ClInclude Include="..\valijson\utils\file_utils.hpp" />
+    <ClInclude Include="..\valijson\utils\jsoncpp_utils.hpp" />
+    <ClInclude Include="..\valijson\utils\utf8_utils.hpp" />
+    <ClInclude Include="..\valijson\validation_results.hpp" />
+    <ClInclude Include="..\valijson\validation_visitor.hpp" />
+    <ClInclude Include="..\valijson\validator.hpp" />
     <ClInclude Include="AddInNative.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Json.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="StringConverters.h" />
+    <ClInclude Include="valiJson.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddInNative.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Json.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="StringConverters.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="AddInNative.def" />
