@@ -1,4 +1,4 @@
-LIBRARY    "ExtrnToolsDRV"
+LIBRARY    "ExternToolsDRV"
 
 EXPORTS
 GetClassObject

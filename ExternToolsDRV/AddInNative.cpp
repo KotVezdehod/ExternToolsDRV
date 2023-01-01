@@ -6,7 +6,9 @@
 //#include <stdio.h>
 //#include <wchar.h>
 //#include "pch.h"
+#include "valiJson.hpp"
 #include "AddInNative.h"
+
 
 #define TIME_LEN 65
 
@@ -581,12 +583,12 @@ bool CAddInNative::CallAsFunc(const long lMethodNum,
 
         break;
 
-    /*case eMethJvdValidate:
+    case eMethJvdValidate:
     {
-        ValiJson jvd(m_iMemory);
+        ValiJson jvd(m_iMemory, m_iConnect);
         jvd.validateJsonByScheme(paParams, pvarRetValue);
     }
-    return true;*/
+    return true;
 
     }
 

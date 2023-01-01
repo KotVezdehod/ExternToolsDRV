@@ -22,7 +22,8 @@ static const wchar_t* g_MethodNames[] = {
     L"LoadPicture",
     L"ShowMessageBox",
     L"Loopback"
-    L"Pause"
+    L"Pause",
+    L"JVD_Validate"
 };
 
 static const wchar_t* g_PropNamesRu[] = {
@@ -38,7 +39,8 @@ static const wchar_t* g_MethodNamesRu[] = {
     L"ЗагрузитьКартинку",
     L"ПоказатьСообщение",
     L"Петля",
-    L"Пауза"
+    L"Пауза",
+    L"JVD_Проверить"
 };
 
 
