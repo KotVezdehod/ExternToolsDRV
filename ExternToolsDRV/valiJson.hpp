@@ -10,7 +10,6 @@
 #include "Json.h"
 #include "StringConverters.h"
 
-//#include "AddInNative.h"
 
 class ValiJson
 {
@@ -91,8 +90,7 @@ private:
 	IMemoryManager* iMemoryManager = nullptr;
 	IAddInDefBase* m_iConnect;
 	StringConverters sconv;
-
-	//bool validate(char* chemaIn, size_t chemaSz, char* dataIn, size_t dataSz, Json::Value* outDiag)
+		
 	bool validate(std::string chemaIn, std::string dataIn, Json::Value* outDiag)
 	{
 		Json::Value rootSchema;
@@ -174,7 +172,7 @@ private:
 		{
 			if (it.context.size() >= lastLen)
 			{
-				std::string currDiag = it.description + std::string(" Поле: ");
+				std::string currDiag = it.description + std::string(" Объект: ");
 
 				bool firstLoc = true;
 				for (const std::string& strErr : it.context)
