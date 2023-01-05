@@ -119,6 +119,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>true</EnableUAC>
       <ModuleDefinitionFile>AddInNative.def</ModuleDefinitionFile>
+      <OutputFile>$(SolutionDir)$(Platform)\$(TargetName)$(Platform)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -159,6 +160,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>AddInNative.def</ModuleDefinitionFile>
+      <OutputFile>$(SolutionDir)$(Platform)\$(TargetName)$(Platform)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -1,11 +1,28 @@
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
 #include <string>
-#include <codecvt>
 #include "StringConverters.h"
 #include "Json.h"
 
+// Convert a wide Unicode string to an UTF8 string
+std::string StringConverters::utf8_encode(const std::wstring& wstr)
+{
+    if (wstr.empty()) return std::string();
+    int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+    std::string strTo(size_needed, 0);
+    WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
+    return strTo;
+}
 
+// Convert an UTF8 string to a wide Unicode String
+std::wstring StringConverters::utf8_decode(const std::string& str)
+{
+    if (str.empty()) return std::wstring();
+    int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
+    std::wstring wstrTo(size_needed, 0);
+    MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
+    return wstrTo;
+}
 
 void StringConverters::DiagToV8String(tVariant* pvarRetValue, IMemoryManager* m_iMemory, bool status, const wchar_t* wch_description)
 {
@@ -23,9 +40,11 @@ bool StringConverters::DiagStructure(bool status, const wchar_t* wch_description
     std::wstring ws_dwscription = std::wstring(wch_description);
     std::wstring ws_data = std::wstring(wch_data);
 
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    std::string s_description = converter.to_bytes(ws_dwscription);
-    std::string s_data = converter.to_bytes(ws_data);
+    //std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    //std::string s_description = converter.to_bytes(ws_dwscription);
+    std::string s_description = utf8_encode(ws_dwscription);
+    //std::string s_data = converter.to_bytes(ws_data);
+    std::string s_data = utf8_encode(ws_data);
 
     Json::Value root;
     root["Status"] = status;
@@ -34,7 +53,8 @@ bool StringConverters::DiagStructure(bool status, const wchar_t* wch_description
 
     Json::StreamWriterBuilder builder;
     std::string s_res = Json::writeString(builder, root);
-    std::wstring wstr = converter.from_bytes(s_res);
+    //std::wstring wstr = converter.from_bytes(s_res);
+    std::wstring wstr = utf8_decode(s_res);
 
     if (!*out_str)
     {
@@ -67,8 +87,8 @@ void StringConverters::ToV8StringFromChar(const char* str, tVariant* par, IMemor
 {
     if (str)
     {
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        std::wstring wstr = converter.from_bytes(std::string(str));
+        
+        std::wstring wstr = utf8_decode(std::string(str));
 
         ULONG len = wcslen(wstr.c_str());
         m_iMemory->AllocMemory((void**)&par->pwstrVal, (len + 1) * sizeof(WCHAR_T));

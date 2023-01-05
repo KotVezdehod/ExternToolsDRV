@@ -1,5 +1,6 @@
-﻿#include <chrono>
-#include <codecvt>
+﻿#define VALIJSON_USE_EXCEPTIONS true
+
+#include <chrono>
 #include <thread>
 #include <string>
 #include <locale>

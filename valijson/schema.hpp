@@ -64,7 +64,7 @@ public:
             }
 #if VALIJSON_USE_EXCEPTIONS
         } catch (const std::exception &e) {
-            fprintf(stderr, "Caught an exception while destroying Schema: %s",
+            fprintf(stderr, "Исключение при деконструкции схемы: %s",
                     e.what());
         }
 #endif

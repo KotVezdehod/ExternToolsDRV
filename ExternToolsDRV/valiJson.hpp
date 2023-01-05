@@ -1,7 +1,6 @@
-﻿#pragma once
+#pragma once
 
 #include <set>
-#include <codecvt>
 //#include <fstream>
 
 #include "../valijson/adapters/jsoncpp_adapter.hpp"
@@ -20,8 +19,6 @@ public:
 
 	void validateJsonByScheme(tVariant* paParams, tVariant* pvarRetValue)
 	{
-
-
 
 		if (TV_VT(&paParams[0]) != VTYPE_PWSTR)
 		{
@@ -69,12 +66,16 @@ public:
 						Json::Value details = Json::arrayValue;
 						details.clear();
 
-						root["Status"] = validate(chChema, chemaSz, chData, dataSz, &details);
+						std::string sChema = sconv.utf8_encode(std::wstring(reinterpret_cast<wchar_t*>(chChema)));		//из 1с приезжает wchar_t, а либы работают с multibyte
+						std::string sData = sconv.utf8_encode(std::wstring(reinterpret_cast<wchar_t*>(chData)));
+
+						root["Status"] = validate(sChema.c_str(), strlen(sChema.c_str()), sData.c_str(), strlen(sData.c_str()), &details);
 						root["Description"] = details;
 						root["Data"] = "";
 
 						Json::FastWriter fw;
 						std::string s_res = fw.write(root);
+
 						sconv.ToV8StringFromChar(s_res.c_str(), pvarRetValue, iMemoryManager);
 
 						delete[] chData;
@@ -117,7 +118,7 @@ private:
 	StringConverters sconv;
 
 	//bool validate(char* chemaIn, size_t chemaSz, char* dataIn, size_t dataSz, Json::Value* outDiag)
-	bool validate(char* chemaIn, size_t chemaSz, char* dataIn, size_t dataSz, Json::Value* outDiag)
+	bool validate(const char* chemaIn, size_t chemaSz, const char* dataIn, size_t dataSz, Json::Value* outDiag)
 	{
 		Json::Value rootSchema;
 		Json::CharReaderBuilder builder;
@@ -125,72 +126,89 @@ private:
 
 		std::string err;
 
-
-		if (reader->parse(chemaIn, chemaIn + chemaSz, &rootSchema, &err))
+		try
 		{
-
-			valijson::Schema schema;
-			valijson::SchemaParser parser;
-			valijson::adapters::JsonCppAdapter mySchemaAdapter(rootSchema);
-			parser.populateSchema(mySchemaAdapter, schema);
-
-			Json::Value rootData;
-
-			if (reader->parse(dataIn, dataIn + dataSz, &rootData, &err))
+			if (reader->parse(chemaIn, chemaIn + chemaSz, &rootSchema, &err))
 			{
 
-				valijson::Validator validator;
-				valijson::adapters::JsonCppAdapter dataAdapter(rootData);
-				valijson::ValidationResults res;
+				valijson::Schema schema;
+				valijson::SchemaParser parser;
+				valijson::adapters::JsonCppAdapter mySchemaAdapter(rootSchema);
 
-				if (!validator.validate(schema, dataAdapter, &res))
+				parser.populateSchema(mySchemaAdapter, schema);
+				
+				Json::Value rootData;
+
+				try
 				{
-					buildFullErrorMessage(&res, outDiag);
+					if (reader->parse(dataIn, dataIn + dataSz, &rootData, &err))
+					{
+
+						valijson::Validator validator;
+						valijson::adapters::JsonCppAdapter dataAdapter(rootData);
+						valijson::ValidationResults res;
+
+						if (!validator.validate(schema, dataAdapter, &res))
+						{
+							buildFullErrorMessage(&res, outDiag);
+							return false;
+						}
+
+						outDiag->append(std::string("OK"));
+						return true;
+					}
+					else
+					{
+						outDiag->append(std::string("Ошибка при разборе JSON: "));
+						outDiag->append(err);
+						return false;
+					}
+				}
+				catch (const std::exception& ex)
+				{
+					outDiag->append(std::string("Исключение при разборе схемы: ") + ex.what());
+					outDiag->append(err);
 					return false;
 				}
 
-				outDiag->append(std::string("OK"));
-				return true;
+
 			}
 			else
 			{
-				outDiag->append(std::string("Ошибка при разборе JSON: "));
+				outDiag->append(std::string("Ошибка при разборе схемы: "));
 				outDiag->append(err);
 				return false;
 			}
 		}
-		else
+		catch (const std::exception& ex)
 		{
-			outDiag->append(std::string("Ошибка при разборе схемы: "));
+			outDiag->append(std::string("Исключение при разборе схемы: ") + ex.what());
 			outDiag->append(err);
 			return false;
 		}
+
+		return false;
 	};
 
 	void buildFullErrorMessage(valijson::ValidationResults* diagObject, Json::Value* outDiag)
 	{
-		std::set<std::wstring> setDiag;
-		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> codec;
+		std::set<std::string> setDiag;
 
 		size_t lastLen = 0;
 		for (const valijson::ValidationResults::Error& it : *diagObject)
 		{
 			if (it.context.size() >= lastLen)
 			{
-				std::wstring currDiag = codec.from_bytes(it.description) + L" Поле: ";
+				std::string currDiag = it.description + std::string(" Поле: ");
+
 				bool firstLoc = true;
 				for (const std::string& strErr : it.context)
 				{
 
-					char* ch0 = G2U(strErr.c_str());
-					std::string s0(ch0);
-					delete[] ch0;
-					std::wstring ws0 = codec.from_bytes(s0);
-
 					if (!firstLoc)
-						currDiag += L" --> ";
+						currDiag += " --> ";
 
-					currDiag += ws0;
+					currDiag += strErr;
 
 					firstLoc = false;
 				};
@@ -202,10 +220,10 @@ private:
 		}
 
 
-		for (const std::wstring& strLoc : setDiag)
+		for (const std::string& strLoc : setDiag)
 		{
 
-			outDiag->append(codec.to_bytes(strLoc).c_str());
+			outDiag->append(strLoc.c_str());
 
 		}
 		return;
@@ -234,43 +252,6 @@ private:
 
 	//	return;
 	//}
-
-	// Функция: преобразование символа utf8 в символ gb2312
-	// Параметр: const char * utf8 [IN] - символ UTF8
-	// Возвращаемое значение: char * - символ gb2312
-	char* U2G(const char* utf8)
-	{
-		int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
-		wchar_t* wstr = new wchar_t[len + 1];
-		memset(wstr, 0, len + 1);
-		MultiByteToWideChar(CP_UTF8, 0, utf8, -1, wstr, len);
-		len = WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
-		char* str = new char[len + 1];
-		memset(str, 0, len + 1);
-		WideCharToMultiByte(CP_ACP, 0, wstr, -1, str, len, NULL, NULL);
-		if (wstr) delete[] wstr;
-		return str;
-	}
-
-	// символы юникода в utf8
-	// Функция: преобразование символов gb2312 в символы utf8
-	// Параметр: const char * gb2312 [IN] - символ gb2312
-	// Возвращаемое значение: char * - символ UTF8
-	char* G2U(const char* gb2312)
-	{
-		int len = MultiByteToWideChar(CP_ACP, 0, gb2312, -1, NULL, 0);
-		wchar_t* wstr = new wchar_t[len + 1];
-		memset(wstr, 0, len + 1);
-		MultiByteToWideChar(CP_ACP, 0, gb2312, -1, wstr, len);
-		len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
-		char* str = new char[len + 1];
-		memset(str, 0, len + 1);
-		WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, len, NULL, NULL);
-		if (wstr) delete[] wstr;
-		return str;
-	}
-
-
 
 };
 

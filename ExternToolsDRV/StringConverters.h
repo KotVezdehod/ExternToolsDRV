@@ -8,6 +8,9 @@ class StringConverters
 public:
 	StringConverters() {};
 	~StringConverters() {};
+		
+	std::string utf8_encode(const std::wstring& wstr);
+	std::wstring utf8_decode(const std::string& str);
 
 	void DiagToV8String(tVariant* pvarRetValue, IMemoryManager* m_iMemory, bool status, const wchar_t* wch_description);
 	bool DiagStructure(bool status, const wchar_t* wch_description, const wchar_t* wch_data, wchar_t** out_str);
