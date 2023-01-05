@@ -42,52 +42,27 @@ public:
 
 			if (wchData)
 			{
-				size_t chemaSz = (wcslen(wchChema) + 1) * sizeof(wchar_t);
-				char* chChema = nullptr;
-				chChema = new char[chemaSz];
 
-				if (chChema)
-				{
-					memset(chChema, 0, chemaSz);
-					wcstombs(chChema, wchChema, chemaSz);
+				Json::Value root;
 
-					size_t dataSz = (wcslen(wchData) + 1) * sizeof(wchar_t);
+				Json::Value details = Json::arrayValue;
+				details.clear();
 
-					char* chData = nullptr;
-					chData = new char[dataSz];
+				root["Status"] = validate(
+					sconv.utf8_encode(wchChema), 
+					sconv.utf8_encode(wchData), 
+					&details);
 
-					if (chData)
-					{
-						memset(chData, 0, dataSz);
-						wcstombs(chData, wchData, dataSz);
+				root["Description"] = details;
+				root["Data"] = "";
 
-						Json::Value root;
+				Json::FastWriter fw;
+				
+				sconv.ToV8StringFromChar(
+					fw.write(root).c_str(), 
+					pvarRetValue, 
+					iMemoryManager);
 
-						Json::Value details = Json::arrayValue;
-						details.clear();
-
-						std::string sChema = sconv.utf8_encode(std::wstring(reinterpret_cast<wchar_t*>(chChema)));		//из 1с приезжает wchar_t, а либы работают с multibyte
-						std::string sData = sconv.utf8_encode(std::wstring(reinterpret_cast<wchar_t*>(chData)));
-
-						root["Status"] = validate(sChema.c_str(), strlen(sChema.c_str()), sData.c_str(), strlen(sData.c_str()), &details);
-						root["Description"] = details;
-						root["Data"] = "";
-
-						Json::FastWriter fw;
-						std::string s_res = fw.write(root);
-
-						sconv.ToV8StringFromChar(s_res.c_str(), pvarRetValue, iMemoryManager);
-
-						delete[] chData;
-					}
-
-
-					delete[] chChema;
-				}
-				else
-				{
-					sconv.DiagToV8String(pvarRetValue, iMemoryManager, false, L"не удалось выделить память под строку схемы.");
-				}
 
 				delete[] wchData;
 			}
@@ -118,7 +93,7 @@ private:
 	StringConverters sconv;
 
 	//bool validate(char* chemaIn, size_t chemaSz, char* dataIn, size_t dataSz, Json::Value* outDiag)
-	bool validate(const char* chemaIn, size_t chemaSz, const char* dataIn, size_t dataSz, Json::Value* outDiag)
+	bool validate(std::string chemaIn, std::string dataIn, Json::Value* outDiag)
 	{
 		Json::Value rootSchema;
 		Json::CharReaderBuilder builder;
@@ -128,7 +103,7 @@ private:
 
 		try
 		{
-			if (reader->parse(chemaIn, chemaIn + chemaSz, &rootSchema, &err))
+			if (reader->parse(chemaIn.c_str(), chemaIn.c_str() + chemaIn.length(), &rootSchema, &err))
 			{
 
 				valijson::Schema schema;
@@ -141,7 +116,7 @@ private:
 
 				try
 				{
-					if (reader->parse(dataIn, dataIn + dataSz, &rootData, &err))
+					if (reader->parse(dataIn.c_str(), dataIn.c_str() + dataIn.length(), &rootData, &err))
 					{
 
 						valijson::Validator validator;
