@@ -129,6 +129,12 @@
     <ClInclude Include="StringConverters.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="RegExFor1c.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="libcpp-crypto.hpp">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -146,10 +152,14 @@
     <ClCompile Include="StringConverters.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="RegExFor1c.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="AddInNative.def">
       <Filter>Исходные файлы</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

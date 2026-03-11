@@ -4,11 +4,15 @@
 #include <thread>
 #include <string>
 #include <locale>
+#include <codecvt>
 //#include <stdio.h>
 //#include <wchar.h>
 //#include "pch.h"
 #include "valiJson.hpp"
 #include "AddInNative.h"
+#include "RegExFor1c.h"
+#include "libcpp-crypto.hpp"
+#include "StringConverters.h"
 
 
 #define TIME_LEN 65
@@ -313,6 +317,14 @@ long CAddInNative::GetNParams(const long lMethodNum)
         return 1;
     case eMethJvdValidate:
         return 2;
+    case eMethRexMatch:
+        return 2;
+    case eMethRexReplace:
+        return 3;
+    case eMethRSAEncrypt:
+        return 2;
+    case eMethRSADecrypt:
+        return 2;
     default:
         return 0;
     }
@@ -333,6 +345,9 @@ bool CAddInNative::GetParamDefValue(const long lMethodNum, const long lParamNum,
     case eMethStartTimer:
     case eMethStopTimer:
     case eMethShowMsgBox:
+    case eMethRSAEncrypt:
+    case eMethRSADecrypt:
+    case eMethRSAGenerateKeys:
         // There are no parameter values by default 
         break;
     default:
@@ -349,6 +364,11 @@ bool CAddInNative::HasRetVal(const long lMethodNum)
     case eMethLoadPicture:
     case eLoopback:
     case eMethJvdValidate:
+    case eMethRexMatch:
+    case eMethRexReplace:
+    case eMethRSAEncrypt:
+    case eMethRSADecrypt:
+    case eMethRSAGenerateKeys:
         return true;
     default:
         return false;
@@ -588,6 +608,79 @@ bool CAddInNative::CallAsFunc(const long lMethodNum,
     {
         ValiJson jvd(m_iMemory, m_iConnect);
         jvd.validateJsonByScheme(paParams, pvarRetValue);
+    }
+    return true;
+    case eMethRexMatch:
+    {
+        RegExFor1c rex(m_iMemory);
+        rex.regexMatch(paParams, pvarRetValue);
+    }
+    return true;
+
+    case eMethRexReplace:
+    {
+        RegExFor1c rex(m_iMemory);
+        rex.regexReplace(paParams, pvarRetValue);
+
+    }
+    return true;
+
+    case eMethRSAEncrypt: {
+       if (TV_VT(&paParams[0]) == VTYPE_PWSTR && TV_VT(&paParams[1]) == VTYPE_PWSTR)
+        {
+            auto codec = std::make_unique<std::wstring_convert<std::codecvt_utf8<wchar_t>>>();
+
+            auto sc = std::make_unique<StringConverters>();
+
+            wchar_t* wchTextToEncrypt = nullptr;
+            sc->convFromShortWchar(&wchTextToEncrypt, (&paParams[0])->pwstrVal);
+            std::wstring wstrTextToEncrypt(wchTextToEncrypt);
+            delete[] wchTextToEncrypt;
+            auto strTextToEncrypt = codec->to_bytes(wstrTextToEncrypt);
+
+            wchar_t* wchOpenKey = nullptr;
+            sc->convFromShortWchar(&wchOpenKey, (&paParams[1])->pwstrVal);
+            std::wstring wstrOpenKey(wchOpenKey);
+            delete[] wchOpenKey;
+            auto strOpenKey = codec->to_bytes(wstrOpenKey);
+            
+            auto encodedTextStr = lklibs::CryptoService::encryptWithRSA(strTextToEncrypt, strOpenKey);
+            sc->ToV8StringFromChar(encodedTextStr.c_str(), pvarRetValue, m_iMemory);
+
+        }
+    }
+        return true;
+
+    case eMethRSADecrypt: {
+        auto codec = std::make_unique<std::wstring_convert<std::codecvt_utf8<wchar_t>>>();
+        auto sc = std::make_unique<StringConverters>();
+
+        wchar_t* wchTextToDecrypt = nullptr;
+        sc->convFromShortWchar(&wchTextToDecrypt, (&paParams[0])->pwstrVal);
+        std::wstring wstrTextToDecrypt(wchTextToDecrypt);
+        delete[] wchTextToDecrypt;
+        auto strTextToDecrypt = codec->to_bytes(wstrTextToDecrypt);
+
+        wchar_t* wchPrivate = nullptr;
+        sc->convFromShortWchar(&wchPrivate, (&paParams[1])->pwstrVal);
+        std::wstring wstrPrivateKey(wchPrivate);
+        delete[] wchPrivate;
+        auto strPrivateKey = codec->to_bytes(wstrPrivateKey);
+
+        auto encodedTextStr = lklibs::CryptoService::decryptWithRSA(strTextToDecrypt, strPrivateKey);
+        sc->ToV8StringFromChar(encodedTextStr.c_str(), pvarRetValue, m_iMemory);
+    }
+    return true;
+
+    case eMethRSAGenerateKeys: {
+       auto keyPair = lklibs::CryptoService::generateRSAKeyPair(2048);
+
+        std::string outKeyPairStr = keyPair.publicKey;
+        outKeyPairStr += "\r\n";
+        outKeyPairStr += keyPair.privateKey;
+
+        auto sc = std::make_unique<StringConverters>();
+        sc->ToV8StringFromChar(outKeyPairStr.c_str(), pvarRetValue, m_iMemory);
     }
     return true;
 

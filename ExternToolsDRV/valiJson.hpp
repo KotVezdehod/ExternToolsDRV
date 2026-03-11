@@ -98,12 +98,10 @@ private:
 		const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
 
 		std::string err;
-
 		try
 		{
 			if (reader->parse(chemaIn.c_str(), chemaIn.c_str() + chemaIn.length(), &rootSchema, &err))
 			{
-
 				valijson::Schema schema;
 				valijson::SchemaParser parser;
 				valijson::adapters::JsonCppAdapter mySchemaAdapter(rootSchema);

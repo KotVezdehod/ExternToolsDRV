@@ -23,7 +23,13 @@ static const wchar_t* g_MethodNames[] = {
     L"ShowMessageBox",
     L"Loopback"
     L"Pause",
-    L"JVD_Validate"
+    L"JVD_Validate",
+    L"REX_Match",
+    L"REX_Replace",
+    L"RSA_Encrypt",
+    L"RSA_Decrypt",
+    L"RSA_GenerateKeys"
+    
 };
 
 static const wchar_t* g_PropNamesRu[] = {
@@ -40,7 +46,12 @@ static const wchar_t* g_MethodNamesRu[] = {
     L"ПоказатьСообщение",
     L"Петля",
     L"Пауза",
-    L"JVD_Проверить"
+    L"JVD_Проверить",
+    L"REX_Совпадения",
+    L"REX_Замена",
+    L"RSA_Зашифровать",
+    L"RSA_Расшифровать",
+    L"RSA_СгенерироватьПаруКлючей"
 };
 
 
@@ -68,6 +79,11 @@ public:
 		eLoopback,
         eMethDelay,
         eMethJvdValidate,
+        eMethRexMatch,
+        eMethRexReplace,
+        eMethRSAEncrypt,
+        eMethRSADecrypt,
+        eMethRSAGenerateKeys,
         eMethLast      // Always last
     };
 
