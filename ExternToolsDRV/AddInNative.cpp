@@ -629,7 +629,6 @@ bool CAddInNative::CallAsFunc(const long lMethodNum,
        if (TV_VT(&paParams[0]) == VTYPE_PWSTR && TV_VT(&paParams[1]) == VTYPE_PWSTR)
         {
             auto codec = std::make_unique<std::wstring_convert<std::codecvt_utf8<wchar_t>>>();
-
             auto sc = std::make_unique<StringConverters>();
 
             wchar_t* wchTextToEncrypt = nullptr;
@@ -643,10 +642,17 @@ bool CAddInNative::CallAsFunc(const long lMethodNum,
             std::wstring wstrOpenKey(wchOpenKey);
             delete[] wchOpenKey;
             auto strOpenKey = codec->to_bytes(wstrOpenKey);
+            std::string encodedTextStr;
+            try
+            {
+                encodedTextStr = lklibs::CryptoService::encryptWithRSA(strTextToEncrypt, strOpenKey);
+                sc->ToV8StringFromChar(encodedTextStr.c_str(), pvarRetValue, m_iMemory);
+            }
+            catch (const std::exception& ex)
+            {
+                sc->ToV8StringFromChar(ex.what(), pvarRetValue, m_iMemory);
+            }
             
-            auto encodedTextStr = lklibs::CryptoService::encryptWithRSA(strTextToEncrypt, strOpenKey);
-            sc->ToV8StringFromChar(encodedTextStr.c_str(), pvarRetValue, m_iMemory);
-
         }
     }
         return true;
@@ -657,6 +663,7 @@ bool CAddInNative::CallAsFunc(const long lMethodNum,
 
         wchar_t* wchTextToDecrypt = nullptr;
         sc->convFromShortWchar(&wchTextToDecrypt, (&paParams[0])->pwstrVal);
+
         std::wstring wstrTextToDecrypt(wchTextToDecrypt);
         delete[] wchTextToDecrypt;
         auto strTextToDecrypt = codec->to_bytes(wstrTextToDecrypt);
@@ -667,8 +674,17 @@ bool CAddInNative::CallAsFunc(const long lMethodNum,
         delete[] wchPrivate;
         auto strPrivateKey = codec->to_bytes(wstrPrivateKey);
 
-        auto encodedTextStr = lklibs::CryptoService::decryptWithRSA(strTextToDecrypt, strPrivateKey);
-        sc->ToV8StringFromChar(encodedTextStr.c_str(), pvarRetValue, m_iMemory);
+        std::string encodedTextStr;
+        try
+        {
+            encodedTextStr = lklibs::CryptoService::decryptWithRSA(strTextToDecrypt, strPrivateKey);
+            sc->ToV8StringFromChar(encodedTextStr.c_str(), pvarRetValue, m_iMemory);
+        }
+        catch (const std::exception& ex)
+        {
+            sc->ToV8StringFromChar(ex.what(), pvarRetValue, m_iMemory);
+        }
+        
     }
     return true;
 
@@ -678,6 +694,7 @@ bool CAddInNative::CallAsFunc(const long lMethodNum,
         std::string outKeyPairStr = keyPair.publicKey;
         outKeyPairStr += "\r\n";
         outKeyPairStr += keyPair.privateKey;
+
 
         auto sc = std::make_unique<StringConverters>();
         sc->ToV8StringFromChar(outKeyPairStr.c_str(), pvarRetValue, m_iMemory);
